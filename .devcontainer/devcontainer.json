@@ -4,7 +4,8 @@
   "dockerComposeFile": "compose.yml",
   "service": "dev",
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {"version": "27.0.3"}
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {"version": "27.0.3"},
+    "ghcr.io/devcontainers-contrib/features/act:1": {"version": "0.2.65"}
   },
 
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
@@ -24,7 +25,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "editorconfig.editorconfig"
+        "editorconfig.editorconfig",
+        "GitHub.vscode-github-actions"
       ],
       "settings": {
       }
