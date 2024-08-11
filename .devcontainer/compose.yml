@@ -1,0 +1,6 @@
+services:
+  dev:
+    image: mcr.microsoft.com/devcontainers/base:1-bookworm
+    command: sleep infinity
+    volumes:
+      - ../..:/workspaces:cached
