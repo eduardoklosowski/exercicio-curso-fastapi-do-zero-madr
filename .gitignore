@@ -1,0 +1,4 @@
+# Editor
+*.swp
+/.idea
+/.vscode
