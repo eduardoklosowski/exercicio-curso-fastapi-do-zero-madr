@@ -4,6 +4,7 @@
   "dockerComposeFile": "compose.yml",
   "service": "dev",
   "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {"version": "27.0.3"}
   },
 
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
