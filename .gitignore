@@ -2,6 +2,10 @@
 *.py[cod]
 __pycache__
 
+# Development tools
+/.venv
+/dist
+
 # Editor
 *.swp
 /.idea

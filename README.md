@@ -8,6 +8,7 @@ Esse é meu projeto final do curso [FastAPI do Zero](https://fastapidozero.dunos
 - [Dev Containers](https://containers.dev/): Criar ambiente de desenvolvimento dentro de um contêiner Docker de forma automatizada, não exigindo nenhuma configuração manual.
 - [GNU Make](https://www.gnu.org/software/make/): Executar comandos no projeto.
 - [GitHub Actions](https://docs.github.com/pt/actions): Executar os lints e testes no servidor.
+- [Poetry](https://python-poetry.org/): Gerenciar o projeto Python e controlar as dependências.
 
 ## Como configurar o projeto para desenvolvimento local?
 

@@ -5,7 +5,8 @@
   "service": "dev",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {"version": "27.0.3"},
-    "ghcr.io/devcontainers-contrib/features/act:1": {"version": "0.2.65"}
+    "ghcr.io/devcontainers-contrib/features/act:1": {"version": "0.2.65"},
+    "ghcr.io/devcontainers-contrib/features/poetry:2": {"version": "1.8.3"}
   },
 
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
@@ -26,10 +27,11 @@
     "vscode": {
       "extensions": [
         "editorconfig.editorconfig",
-        "GitHub.vscode-github-actions"
+        "GitHub.vscode-github-actions",
+        "tamasfe.even-better-toml"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "/usr/local/bin/python"
+        "python.defaultInterpreterPath": "./.venv/bin/python"
       }
     }
   }

@@ -18,6 +18,7 @@ run:
 init: init-python
 
 init-python:
+	poetry install --sync
 
 
 # Format
@@ -31,11 +32,14 @@ fmt-python:
 
 # Lint
 
-.PHONY: lint lint-python
+.PHONY: lint lint-python lint-poetry
 
 lint: lint-python
 
-lint-python:
+lint-python: lint-poetry
+
+lint-poetry:
+	poetry check --lock
 
 
 # Test
@@ -62,3 +66,4 @@ clean-pycache:
 clean-python-tools:
 
 dist-clean: clean
+	rm -rf .venv dist

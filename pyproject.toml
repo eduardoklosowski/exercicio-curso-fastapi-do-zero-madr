@@ -1,0 +1,14 @@
+[build-system]
+requires = ["poetry-core>=1,<2"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "madr"
+version = "0.0.0"
+description = "Projeto Final do FastAPI do Zero - Meu Acervo Digital de Romances"
+authors = ["Eduardo Klosowski <eduardo_klosowski@yahoo.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "~3.12"
