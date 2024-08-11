@@ -29,6 +29,7 @@
         "GitHub.vscode-github-actions"
       ],
       "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
       }
     }
   }
