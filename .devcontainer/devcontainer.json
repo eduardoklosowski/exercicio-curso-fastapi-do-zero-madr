@@ -29,11 +29,14 @@
         "editorconfig.editorconfig",
         "GitHub.vscode-github-actions",
         "tamasfe.even-better-toml",
-        "charliermarsh.ruff"
+        "charliermarsh.ruff",
+        "matangover.mypy"
       ],
       "settings": {
         "python.defaultInterpreterPath": "./.venv/bin/python",
         "ruff.importStrategy": "fromEnvironment",
+        "mypy.runUsingActiveInterpreter": true,
+        "mypy.targets": ["src", "tests"],
         "[python]": {
           "editor.defaultFormatter": "charliermarsh.ruff"
         }

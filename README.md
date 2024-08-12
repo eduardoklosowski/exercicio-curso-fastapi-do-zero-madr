@@ -10,6 +10,7 @@ Esse é meu projeto final do curso [FastAPI do Zero](https://fastapidozero.dunos
 - [GitHub Actions](https://docs.github.com/pt/actions): Executar os lints e testes no servidor.
 - [Poetry](https://python-poetry.org/): Gerenciar o projeto Python e controlar as dependências.
 - [Ruff](https://docs.astral.sh/ruff/): Formatador e regras de lint para o código Python.
+- [mypy](https://www.mypy-lang.org/): Varifica erros de tipos no código Python.
 
 ## Como configurar o projeto para desenvolvimento local?
 

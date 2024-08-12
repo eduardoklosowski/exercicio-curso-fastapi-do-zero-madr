@@ -34,11 +34,11 @@ fmt-python:
 
 # Lint
 
-.PHONY: lint lint-python lint-poetry lint-ruff-format lint-ruff-check
+.PHONY: lint lint-python lint-poetry lint-ruff-format lint-ruff-check lint-mypy
 
 lint: lint-python
 
-lint-python: lint-poetry lint-ruff-format lint-ruff-check
+lint-python: lint-poetry lint-ruff-format lint-ruff-check lint-mypy
 
 lint-poetry:
 	poetry check --lock
@@ -48,6 +48,9 @@ lint-ruff-format:
 
 lint-ruff-check:
 	poetry run ruff check $(srcdir) $(testdir)
+
+lint-mypy:
+	poetry run mypy --show-error-context --pretty $(srcdir) $(testsdir)
 
 
 # Test
@@ -72,7 +75,7 @@ clean-pycache:
 	find $(srcdir) $(testdir) -type d -empty -delete
 
 clean-python-tools:
-	rm -rf .ruff_cache
+	rm -rf .ruff_cache .mypy_cache
 
 dist-clean: clean
 	rm -rf .venv dist
