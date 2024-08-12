@@ -37,6 +37,8 @@
         "ruff.importStrategy": "fromEnvironment",
         "mypy.runUsingActiveInterpreter": true,
         "mypy.targets": ["src", "tests"],
+        "python.testing.pytestEnabled": true,
+        "python.testing.pytestArgs": ["-vv", "tests"],
         "[python]": {
           "editor.defaultFormatter": "charliermarsh.ruff"
         }

@@ -16,6 +16,7 @@ python = "~3.12"
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.6.2"
 mypy = "^1.11.2"
+pytest = "^8.3.2"
 
 [tool.ruff]
 target-version = "py312"
@@ -43,3 +44,6 @@ show_error_codes = true
 sqlite_cache = true
 plugins = []
 files = ["src/**/*.py", "tests/**/*.py"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

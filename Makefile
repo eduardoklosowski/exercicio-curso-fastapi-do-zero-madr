@@ -55,11 +55,14 @@ lint-mypy:
 
 # Test
 
-.PHONY: test test-python
+.PHONY: test test-python test-pytest
 
 test: test-python
 
-test-python:
+test-python: test-pytest
+
+test-pytest:
+	poetry run pytest $(testdir)
 
 
 # Clean
@@ -75,7 +78,7 @@ clean-pycache:
 	find $(srcdir) $(testdir) -type d -empty -delete
 
 clean-python-tools:
-	rm -rf .ruff_cache .mypy_cache
+	rm -rf .ruff_cache .mypy_cache .pytest_cache
 
 dist-clean: clean
 	rm -rf .venv dist

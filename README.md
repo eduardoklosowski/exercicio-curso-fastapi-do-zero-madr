@@ -11,6 +11,7 @@ Esse é meu projeto final do curso [FastAPI do Zero](https://fastapidozero.dunos
 - [Poetry](https://python-poetry.org/): Gerenciar o projeto Python e controlar as dependências.
 - [Ruff](https://docs.astral.sh/ruff/): Formatador e regras de lint para o código Python.
 - [mypy](https://www.mypy-lang.org/): Varifica erros de tipos no código Python.
+- [pytest](https://docs.pytest.org/en/stable/): Testes automatizados no código Python.
 
 ## Como configurar o projeto para desenvolvimento local?
 
