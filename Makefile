@@ -55,21 +55,24 @@ lint-mypy:
 
 # Test
 
-.PHONY: test test-python test-pytest
+.PHONY: test test-python test-pytest coverage-html
 
 test: test-python
 
 test-python: test-pytest
 
 test-pytest:
-	poetry run pytest $(testdir)
+	poetry run pytest --cov=madr --cov-report=term-missing --no-cov-on-fail --cov-fail-under=100 $(testdir)
+
+coverage-html: test-pytest
+	poetry run coverage html
 
 
 # Clean
 
 .PHONY: clean clean-python clean-pycache clean-python-tools dist-clean
 
-clean: clean-python
+clean: clean-python clean-coverage
 
 clean-python: clean-pycache clean-python-tools
 
@@ -78,7 +81,7 @@ clean-pycache:
 	find $(srcdir) $(testdir) -type d -empty -delete
 
 clean-python-tools:
-	rm -rf .ruff_cache .mypy_cache .pytest_cache
+	rm -rf .ruff_cache .mypy_cache .pytest_cache .coverage .coverage.* htmlcov
 
 dist-clean: clean
 	rm -rf .venv dist

@@ -17,6 +17,7 @@ python = "~3.12"
 ruff = "^0.6.2"
 mypy = "^1.11.2"
 pytest = "^8.3.2"
+pytest-cov = "^5.0.0"
 
 [tool.ruff]
 target-version = "py312"
@@ -47,3 +48,14 @@ files = ["src/**/*.py", "tests/**/*.py"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if (typing\\.)?TYPE_CHECKING:",
+  "@abstractmethod",
+  "@overload",
+]
