@@ -5,6 +5,7 @@ __pycache__
 # Development tools
 /.venv
 /dist
+/.ruff_cache
 
 # Editor
 *.swp

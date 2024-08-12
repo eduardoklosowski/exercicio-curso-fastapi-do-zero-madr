@@ -28,10 +28,15 @@
       "extensions": [
         "editorconfig.editorconfig",
         "GitHub.vscode-github-actions",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
+        "charliermarsh.ruff"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "./.venv/bin/python"
+        "python.defaultInterpreterPath": "./.venv/bin/python",
+        "ruff.importStrategy": "fromEnvironment",
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        }
       }
     }
   }
