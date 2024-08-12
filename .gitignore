@@ -15,4 +15,5 @@ __pycache__
 # Editor
 *.swp
 /.idea
-/.vscode
+/.vscode/*
+!/.vscode/launch.json

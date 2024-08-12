@@ -10,8 +10,9 @@
   },
 
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "forwardPorts": [],
+  "forwardPorts": [8000],
   "portsAttributes": {
+    "8000": {"label": "API", "onAutoForward": "notify"}
   },
   "mounts": [
     {

@@ -9,6 +9,7 @@ testdir = tests
 .PHONY: run
 
 run:
+	poetry run fastapi dev $(srcdir)/madr/api.py
 
 
 # Init
