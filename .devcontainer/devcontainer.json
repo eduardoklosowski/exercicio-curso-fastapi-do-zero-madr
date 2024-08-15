@@ -5,14 +5,16 @@
   "service": "dev",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {"version": "27.0.3"},
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {"version": "1.30.0", "helm": "3.15.3", "minikube": "1.33.1"},
     "ghcr.io/devcontainers-contrib/features/act:1": {"version": "0.2.65"},
     "ghcr.io/devcontainers-contrib/features/poetry:2": {"version": "1.8.3"}
   },
 
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "forwardPorts": [8000],
+  "forwardPorts": [8000, 6001],
   "portsAttributes": {
-    "8000": {"label": "API", "onAutoForward": "notify"}
+    "8000": {"label": "API", "onAutoForward": "notify"},
+    "6001": {"label": "Kubernetes Dashboard", "onAutoForward": "notify"}
   },
   "mounts": [
     {
@@ -28,6 +30,7 @@
     "vscode": {
       "extensions": [
         "editorconfig.editorconfig",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
         "GitHub.vscode-github-actions",
         "tamasfe.even-better-toml",
         "charliermarsh.ruff",

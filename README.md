@@ -12,6 +12,8 @@ Esse é meu projeto final do curso [FastAPI do Zero](https://fastapidozero.dunos
 - [Ruff](https://docs.astral.sh/ruff/): Formatador e regras de lint para o código Python.
 - [mypy](https://www.mypy-lang.org/): Varifica erros de tipos no código Python.
 - [pytest](https://docs.pytest.org/en/stable/): Testes automatizados no código Python.
+- [minikube](https://minikube.sigs.k8s.io/docs/): Gerencia cluster Kubernetes local para testes.
+- [Helm](https://helm.sh/pt/): Gerencia recursos da aplicação criados no Kubernetes.
 
 ## Como configurar o projeto para desenvolvimento local?
 
@@ -29,4 +31,32 @@ cat > .git/hooks/pre-commit << EOF
 make lint test
 EOF
 chmod +x .git/hooks/pre-commit
+```
+
+## Kubernetes
+
+Esse projeto pode ser executado no [Kubernetes](https://kubernetes.io/pt-br/), para isso o [minikube] está disponível no dev container para testá-lo localmente.
+
+Para iniciar um cluster do Kubernetes local, execute o seguinte comando:
+
+```sh
+make minikube-start
+```
+
+Para parar a execução do cluster Kubernetes, basta executar o comando:
+
+```sh
+make minikube-stop
+```
+
+Dessa forma é possível usar o comando de iniciar para executá-lo novamente. Para apagar o cluster, é possível usar o comando:
+
+```sh
+make minikube-delete
+```
+
+Opcionalmente é possível acessar um dashboard do Kubernetes quando ele está executando com o comando:
+
+```sh
+make minikube-dashboard
 ```

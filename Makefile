@@ -69,6 +69,23 @@ coverage-html: test-pytest
 	poetry run coverage html
 
 
+# Kubernetes
+
+.PHONY: minikube-start minikube-stop minikube-delete minikube-dashboard
+
+minikube-start:
+	minikube start --addons=registry,ingress --insecure-registry 192.168.0.0/16
+
+minikube-stop:
+	minikube stop
+
+minikube-delete:
+	minikube delete
+
+minikube-dashboard:
+	minikube dashboard --port=6001
+
+
 # Clean
 
 .PHONY: clean clean-python clean-pycache clean-python-tools dist-clean
