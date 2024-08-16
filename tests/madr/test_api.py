@@ -16,3 +16,13 @@ class TestIndex:
             'description': 'Meu Acervo Digital de Romances',
             'version': version('madr'),
         }
+
+
+class TestHealth:
+    url = '/health'
+
+    def test_health_on_ok(self, client: TestClient) -> None:
+        response = client.get(self.url)
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {'message': 'OK'}

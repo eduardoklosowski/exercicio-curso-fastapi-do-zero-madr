@@ -3,7 +3,7 @@ from importlib.metadata import version
 
 from fastapi import FastAPI
 
-from .schemas import ApiInfo
+from .schemas import ApiInfo, Message
 
 app = FastAPI(
     title='MADR API',
@@ -24,3 +24,13 @@ def index() -> ApiInfo:
         description=app.description,
         version=app.version,
     )
+
+
+@app.get(
+    '/health',
+    summary='Health check da API',
+    tags=['API'],
+    status_code=HTTPStatus.OK,
+)
+def health() -> Message:
+    return Message(message='OK')
