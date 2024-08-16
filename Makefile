@@ -14,9 +14,12 @@ run:
 
 # Init
 
-.PHONY: init init-python
+.PHONY: init init-settings init-python
 
-init: init-python
+init: init-settings init-python
+
+init-settings:
+	[ -e .env ] || cp .env.example .env
 
 init-python:
 	poetry install --sync
@@ -118,4 +121,4 @@ clean-k8s:
 	rm -rf k8s-values.yaml
 
 dist-clean: clean
-	rm -rf .venv dist
+	rm -rf .env .venv dist
