@@ -60,3 +60,17 @@ Opcionalmente é possível acessar um dashboard do Kubernetes quando ele está e
 ```sh
 make minikube-dashboard
 ```
+
+O deploy da aplicação pode ser feita utilizando o comando:
+
+```sh
+make minikube-run-app
+```
+
+Após isso é possível acessar a API atráves do endereço mostrado na tela ou por http://localhost:8000/.
+
+A aplicação também pode ser removida do Kubernetes com o comando:
+
+```sh
+make minikube-delete-app
+```

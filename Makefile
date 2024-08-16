@@ -35,9 +35,9 @@ fmt-python:
 
 # Lint
 
-.PHONY: lint lint-python lint-poetry lint-ruff-format lint-ruff-check lint-mypy
+.PHONY: lint lint-python lint-poetry lint-ruff-format lint-ruff-check lint-mypy lint-k8s lint-helm
 
-lint: lint-python
+lint: lint-python lint-k8s
 
 lint-python: lint-poetry lint-ruff-format lint-ruff-check lint-mypy
 
@@ -52,6 +52,11 @@ lint-ruff-check:
 
 lint-mypy:
 	poetry run mypy --show-error-context --pretty $(srcdir) $(testsdir)
+
+lint-k8s: lint-helm
+
+lint-helm:
+	helm lint chart
 
 
 # Test
@@ -71,7 +76,7 @@ coverage-html: test-pytest
 
 # Kubernetes
 
-.PHONY: minikube-start minikube-stop minikube-delete minikube-dashboard
+.PHONY: minikube-start minikube-stop minikube-delete minikube-dashboard minikube-run-app minikube-delete-app
 
 minikube-start:
 	minikube start --addons=registry,ingress --insecure-registry 192.168.0.0/16
@@ -85,12 +90,20 @@ minikube-delete:
 minikube-dashboard:
 	minikube dashboard --port=6001
 
+minikube-run-app:
+	./scripts/deploy-in-k8s.sh k8s-values.yaml
+	kubectl wait deployments/madr-api --for=condition=available --timeout=-1s
+	kubectl port-forward service/madr-api 8000:80
+
+minikube-delete-app:
+	helm uninstall madr
+
 
 # Clean
 
-.PHONY: clean clean-python clean-pycache clean-python-tools dist-clean
+.PHONY: clean clean-python clean-pycache clean-python-tools clean-k8s dist-clean
 
-clean: clean-python clean-coverage
+clean: clean-python clean-coverage clean-k8s
 
 clean-python: clean-pycache clean-python-tools
 
@@ -100,6 +113,9 @@ clean-pycache:
 
 clean-python-tools:
 	rm -rf .ruff_cache .mypy_cache .pytest_cache .coverage .coverage.* htmlcov
+
+clean-k8s:
+	rm -rf k8s-values.yaml
 
 dist-clean: clean
 	rm -rf .venv dist

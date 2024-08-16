@@ -14,6 +14,10 @@ poetry config virtualenvs.in-project true
 # Config minikube
 minikube config set driver docker
 
+# Setup yq
+sudo wget -O/usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.44.3/yq_linux_amd64
+sudo chmod +x /usr/local/bin/yq
+
 # Completion
 pipx install argcomplete
 mkdir -p ~/.local/share/bash-completion/completions

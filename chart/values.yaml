@@ -1,0 +1,7 @@
+host: madr.cluster.local
+
+images:
+  api: madr/api:latest
+
+api:
+  replicaCount: 1

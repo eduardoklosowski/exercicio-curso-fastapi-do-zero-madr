@@ -12,6 +12,9 @@ __pycache__
 /.coverage.*
 /htmlcov
 
+# Data
+/k8s-values.yaml
+
 # Editor
 *.swp
 /.idea

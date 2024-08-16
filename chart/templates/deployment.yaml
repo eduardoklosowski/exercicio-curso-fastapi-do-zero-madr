@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "madr.fullname" . }}-api
+  labels:
+    {{- include "madr.labels" . | nindent 4 }}
+    app.kubernetes.io/tier: api
+spec:
+  replicas: {{ .Values.api.replicaCount }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "madr.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/tier: api
+  template:
+    metadata:
+      name: {{ include "madr.fullname" . }}-api
+      labels:
+        {{- include "madr.labels" . | nindent 8 }}
+        app.kubernetes.io/tier: api
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: api
+          image: {{ .Values.images.api }}
+          imagePullPolicy: Always
+          ports:
+            - protocol: TCP
+              containerPort: 8000
+          startupProbe:
+            tcpSocket:
+              port: 8000
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              port: 8000
+              path: /health
+            successThreshold: 1
+            failureThreshold: 1
+          livenessProbe:
+            httpGet:
+              port: 8000
+              path: /health
+            successThreshold: 1
+            failureThreshold: 3

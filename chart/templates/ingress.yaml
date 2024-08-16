@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "madr.fullname" . }}
+  labels:
+    {{- include "madr.labels" . | nindent 4 }}
+spec:
+  defaultBackend:
+    service:
+      name: {{ include "madr.fullname" . }}-api
+      port:
+        number: 80
+  rules:
+    - host: {{ .Values.host }}
