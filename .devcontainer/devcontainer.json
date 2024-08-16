@@ -11,10 +11,13 @@
   },
 
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "forwardPorts": [8000, 6001],
+  "forwardPorts": [8000, 5432, 5050, 6001],
   "portsAttributes": {
     "8000": {"label": "API", "onAutoForward": "notify"},
-    "6001": {"label": "Kubernetes Dashboard", "onAutoForward": "notify"}
+    "5432": {"label": "PostgreSQL", "onAutoForward": "silent"},
+    "5050": {"label": "pgAdmin4", "onAutoForward": "silent"},
+    "6001": {"label": "Kubernetes Dashboard", "onAutoForward": "notify"},
+    "25": {"label": "Postfix in pgAdmin4", "onAutoForward": "ignore"}
   },
   "mounts": [
     {

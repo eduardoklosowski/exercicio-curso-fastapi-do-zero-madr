@@ -11,6 +11,11 @@ sudo killall dockerd
 poetry config virtualenvs.in-project true
 [ -e .venv ] || poetry env use /usr/local/bin/python
 
+# Config postgresql
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends postgresql-client pgcli
+sudo rm -rf /var/lib/apt/lists/*
+
 # Config minikube
 minikube config set driver docker
 

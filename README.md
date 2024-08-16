@@ -33,6 +33,17 @@ EOF
 chmod +x .git/hooks/pre-commit
 ```
 
+## pgAdmin4
+
+Esse projeto possui o [pgAdmin4](https://www.pgadmin.org/) para a adiministração do banco de dados [PostgreSQL](https://www.postgresql.org/). Use as informações a baixo para acessá-lo:
+
+```txt
+URL: http://localhost:5050/
+Usuário: user@test.com
+Senha: postgres
+Senha do banco: postgres
+```
+
 ## Kubernetes
 
 Esse projeto pode ser executado no [Kubernetes](https://kubernetes.io/pt-br/), para isso o [minikube] está disponível no dev container para testá-lo localmente.

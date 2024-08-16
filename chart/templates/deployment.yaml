@@ -25,6 +25,9 @@ spec:
         - name: api
           image: {{ .Values.images.api }}
           imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: {{ include "madr.fullname" . }}-api
           ports:
             - protocol: TCP
               containerPort: 8000
@@ -44,3 +47,61 @@ spec:
               path: /health
             successThreshold: 1
             failureThreshold: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "madr.fullname" . }}-pg
+  labels:
+    {{- include "madr.labels" . | nindent 4 }}
+    app.kubernetes.io/tier: db
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "madr.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/tier: db
+  template:
+    metadata:
+      name: {{ include "madr.fullname" . }}-pg
+      labels:
+        {{- include "madr.labels" . | nindent 8 }}
+        app.kubernetes.io/tier: db
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: pg
+          image: {{ .Values.images.pg }}
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: {{ include "madr.fullname" . }}-pg
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          ports:
+            - protocol: TCP
+              containerPort: 5432
+          startupProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+            successThreshold: 1
+            failureThreshold: 1
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+            successThreshold: 1
+            failureThreshold: 3
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "madr.fullname" . }}-pg-data-claim

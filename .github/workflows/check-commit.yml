@@ -36,6 +36,22 @@ jobs:
   test:
     name: Check Tests
     runs-on: ubuntu-22.04
+    env:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@127.0.0.1:5432/madr
+    services:
+      pg:
+        image: postgres:16.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: madr
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 15s
+          --health-timeout 5s
+          --health-retries 4
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

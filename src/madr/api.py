@@ -1,8 +1,11 @@
 from http import HTTPStatus
 from importlib.metadata import version
 
-from fastapi import FastAPI
+import sqlalchemy as sa
+from fastapi import FastAPI, HTTPException
+from sqlalchemy.exc import SQLAlchemyError
 
+from .database import T_DbSession
 from .schemas import ApiInfo, Message
 
 app = FastAPI(
@@ -32,5 +35,10 @@ def index() -> ApiInfo:
     tags=['API'],
     status_code=HTTPStatus.OK,
 )
-def health() -> Message:
+def health(dbsession: T_DbSession) -> Message:
+    try:
+        dbsession.execute(sa.select(sa.text('1'))).one()
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail='Error on database connection') from e
+
     return Message(message='OK')

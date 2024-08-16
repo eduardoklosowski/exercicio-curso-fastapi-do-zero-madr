@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "madr.fullname" . }}-pg-data-claim
+  labels:
+    {{- include "madr.labels" . | nindent 4 }}
+    app.kubernetes.io/tier: db
+spec:
+  storageClassName: {{ .Values.volumes.storageClassName }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pg.storage_size }}
