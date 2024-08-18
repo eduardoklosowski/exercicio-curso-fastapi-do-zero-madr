@@ -12,3 +12,12 @@ class TimestampMixin(MappedAsDataclass):
 
 
 class Base(DeclarativeBase, MappedAsDataclass): ...
+
+
+class User(TimestampMixin, Base, kw_only=True):
+    __tablename__ = 'users'
+
+    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    email: Mapped[str] = mapped_column(unique=True)
+    username: Mapped[str] = mapped_column(unique=True)
+    password: Mapped[str]

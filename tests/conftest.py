@@ -11,7 +11,8 @@ from madr.api import app
 from madr.database import get_dbsession
 from madr.models import Base
 from madr.settings import Settings
-from tests.utils import randstr
+from tests.factories import UserFactory
+from tests.utils import UserWithAttrs, randstr
 
 
 @pytest.fixture(scope='session')
@@ -51,3 +52,27 @@ def client(dbsession: Session) -> Generator[TestClient]:
         yield client
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def user(dbsession: Session) -> UserWithAttrs:
+    password = randstr()
+
+    user = UserFactory.build(clean_password=password)
+    dbsession.add(user)
+    dbsession.commit()
+    dbsession.refresh(user)
+
+    return UserWithAttrs(model=user, clean_password=password)
+
+
+@pytest.fixture
+def other_user(dbsession: Session) -> UserWithAttrs:
+    password = randstr()
+
+    user = UserFactory.build(clean_password=password)
+    dbsession.add(user)
+    dbsession.commit()
+    dbsession.refresh(user)
+
+    return UserWithAttrs(model=user, clean_password=password)
