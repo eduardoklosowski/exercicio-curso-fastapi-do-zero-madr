@@ -37,6 +37,7 @@ jobs:
     name: Check Tests
     runs-on: ubuntu-22.04
     env:
+      SECRET_KEY: secret-key
       DATABASE_URL: postgresql+psycopg://postgres:postgres@127.0.0.1:5432/madr
     services:
       pg:
@@ -77,6 +78,7 @@ jobs:
     name: Check Migrations
     runs-on: ubuntu-22.04
     env:
+      SECRET_KEY: secret-key
       DATABASE_URL: postgresql+psycopg://postgres:postgres@127.0.0.1:5432/madr
     services:
       pg:

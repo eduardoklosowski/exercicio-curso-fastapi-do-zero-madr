@@ -7,6 +7,7 @@ metadata:
     app.kubernetes.io/tier: api
 type: Opaque
 stringData:
+  SECRET_KEY: {{.Values.api.secretKey }}
   DATABASE_URL: postgresql+psycopg://{{ .Values.pg.user }}:{{ .Values.pg.password }}@{{ include "madr.fullname" . }}-pg:5432/{{ .Values.pg.database }}
 ---
 apiVersion: v1

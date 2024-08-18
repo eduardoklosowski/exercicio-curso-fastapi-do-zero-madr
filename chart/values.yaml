@@ -8,6 +8,7 @@ volumes:
   storageClassName: standard
 
 api:
+  secretKey: your-secret-key
   replicaCount: 1
 
 pg:
