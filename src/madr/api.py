@@ -3,9 +3,12 @@ from importlib.metadata import version
 
 import sqlalchemy as sa
 from fastapi import FastAPI, HTTPException
+from fastapi.requests import Request
+from fastapi.responses import JSONResponse, Response
 from sqlalchemy.exc import SQLAlchemyError
 
 from .database import T_DbSession
+from .errors import HttpError
 from .schemas import ApiInfo, Message
 
 app = FastAPI(
@@ -13,6 +16,14 @@ app = FastAPI(
     description='Meu Acervo Digital de Romances',
     version=version('madr'),
 )
+
+
+@app.exception_handler(HttpError)
+async def http_error_handler(_request: Request, exc: HttpError) -> Response:
+    return JSONResponse(
+        status_code=exc.http_status_code,
+        content=Message(message=exc.message).model_dump(),
+    )
 
 
 @app.get(
