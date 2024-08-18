@@ -34,3 +34,4 @@ echo 'eval "$(helm completion bash)"' > ~/.local/share/bash-completion/completio
 
 # Inicia projeto
 make init
+make db-migrate

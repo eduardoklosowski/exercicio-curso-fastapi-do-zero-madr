@@ -18,8 +18,10 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app/
 
+COPY migrations ./migrations
+COPY alembic.ini scripts/run-with-migrate.sh ./
 COPY --from=builder /app/constraints.txt /app/dist/madr-*.whl ./
 RUN pip install --disable-pip-version-check --no-cache-dir --constraint constraints.txt madr-*.whl
 
 EXPOSE 8000
-CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8000", "--access-log", "madr.api:app"]
+CMD ["./run-with-migrate.sh"]

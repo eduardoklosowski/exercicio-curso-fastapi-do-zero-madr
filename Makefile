@@ -1,6 +1,7 @@
 # Projeto
 
 srcdir = src
+migrationsdir = migrations
 testdir = tests
 
 
@@ -32,8 +33,8 @@ init-python:
 fmt: fmt-python
 
 fmt-python:
-	poetry run ruff check --select I001 --fix $(srcdir) $(testdir)
-	poetry run ruff format $(srcdir) $(testdir)
+	poetry run ruff check --select I001 --fix $(srcdir) $(migrationsdir) $(testdir)
+	poetry run ruff format $(srcdir) $(migrationsdir) $(testdir)
 
 
 # Lint
@@ -48,13 +49,13 @@ lint-poetry:
 	poetry check --lock
 
 lint-ruff-format:
-	poetry run ruff format --diff $(srcdir) $(testdir)
+	poetry run ruff format --diff $(srcdir) $(migrationsdir) $(testdir)
 
 lint-ruff-check:
-	poetry run ruff check $(srcdir) $(testdir)
+	poetry run ruff check $(srcdir) $(migrationsdir) $(testdir)
 
 lint-mypy:
-	poetry run mypy --show-error-context --pretty $(srcdir) $(testsdir)
+	poetry run mypy --show-error-context --pretty $(srcdir) $(migrationsdir) $(testsdir)
 
 lint-k8s: lint-helm
 
@@ -75,6 +76,23 @@ test-pytest:
 
 coverage-html: test-pytest
 	poetry run coverage html
+
+
+# Database
+
+.PHONY: db-migrate db-gen-migrate db-test-migrate
+
+db-migrate:
+	poetry run alembic upgrade head
+
+db-gen-migrate:
+	poetry run alembic revision --autogenerate -m "$(shell read -rp 'Nome da migração: ' nome; echo "$$nome")"
+
+db-test-migrate:
+	alembic upgrade head
+	alembic downgrade base
+	alembic upgrade head
+	alembic downgrade base
 
 
 # Kubernetes
@@ -111,8 +129,8 @@ clean: clean-python clean-coverage clean-k8s
 clean-python: clean-pycache clean-python-tools
 
 clean-pycache:
-	find $(srcdir) $(testdir) -name __pycache__ -exec rm -rf {} +
-	find $(srcdir) $(testdir) -type d -empty -delete
+	find $(srcdir) $(migrationsdir) $(testdir) -name __pycache__ -exec rm -rf {} +
+	find $(srcdir) $(migrationsdir) $(testdir) -type d -empty -delete
 
 clean-python-tools:
 	rm -rf .ruff_cache .mypy_cache .pytest_cache .coverage .coverage.* htmlcov

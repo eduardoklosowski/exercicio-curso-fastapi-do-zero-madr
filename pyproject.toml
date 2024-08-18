@@ -12,6 +12,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "~3.12"
+alembic = "^1.13.2"
 fastapi = "^0.112.2"
 psycopg = {version = "^3.2.1", extras = ["binary"]}
 pydantic = "^2.8.2"
@@ -41,6 +42,7 @@ select = ["ALL"]
 ignore = ["D", "COM812", "ISC001"]
 
 [tool.ruff.lint.per-file-ignores]
+"migrations/*.py" = ["INP001"]
 "tests/*.py" = ["S101", "S311", "ARG001", "ARG002"]
 
 [tool.ruff.lint.flake8-quotes]

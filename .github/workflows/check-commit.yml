@@ -72,3 +72,52 @@ jobs:
 
       - name: Run tests
         run: make test
+
+  test-migrations:
+    name: Check Migrations
+    runs-on: ubuntu-22.04
+    env:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@127.0.0.1:5432/madr
+    services:
+      pg:
+        image: postgres:16.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: madr
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 15s
+          --health-timeout 5s
+          --health-retries 4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Poetry
+        run: pipx install poetry==1.8.3
+
+      - name: Setup Python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: poetry
+
+      - name: Install dependencies
+        if: steps.setup-python.outputs.cache-hit != 'true'
+        run: poetry install --sync
+
+      - name: Run first upgrade
+        run: poetry run alembic upgrade head
+
+      - name: Run first downgrade
+        run: poetry run alembic downgrade base
+
+      - name: Run second upgrade
+        run: poetry run alembic upgrade head
+
+      - name: Run second downgrade
+        run: poetry run alembic downgrade base
