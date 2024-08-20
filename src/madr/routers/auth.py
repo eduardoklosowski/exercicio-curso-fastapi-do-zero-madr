@@ -9,7 +9,7 @@ from madr.database import T_DbSession
 from madr.errors import InvalidLoginError
 from madr.models import User
 from madr.schemas import Token
-from madr.security import create_access_token, verify_password
+from madr.security import T_CurrentUser, create_access_token, verify_password
 
 router = APIRouter(tags=['Auth'])
 
@@ -28,4 +28,13 @@ def login_for_access_token(dbsession: T_DbSession, form_data: T_OAuth2Form) -> T
     if not user or not verify_password(form_data.password, user.password):
         raise InvalidLoginError
 
+    return Token(access_token=create_access_token(email=user.email))
+
+
+@router.post(
+    '/refresh-token',
+    summary='Atualiza token de acesso',
+    status_code=HTTPStatus.OK,
+)
+def refresh_access_token(user: T_CurrentUser) -> Token:
     return Token(access_token=create_access_token(email=user.email))
