@@ -46,3 +46,22 @@ class UserPublic(BaseModel):
     id: int
     email: EmailStr
     username: str
+
+
+class RomancistaSchema(BaseModel):
+    name: str = Field(min_length=1)
+
+    @field_validator('name')
+    @classmethod
+    def name_validate(cls, v: str) -> str:
+        v = sanitize(v)
+        if not v:
+            raise ValueError('name não deve estar em branco')
+        return v
+
+
+class RomancistaPublic(BaseModel):
+    model_config = {'from_attributes': True}
+
+    id: int
+    name: str
