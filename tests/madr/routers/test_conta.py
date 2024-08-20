@@ -290,3 +290,34 @@ class TestUpdateUser:
 
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
         assert response.json()['detail'][0]['loc'] == ['body', 'password']
+
+
+class TestDeleteUser:
+    url = '/conta/{user_id}'
+
+    def test_delete_user(self, client: TestClient, dbsession: Session, user: UserWithAttrs, token: str) -> None:
+        response = client.delete(
+            self.url.format(user_id=user.model.id),
+            headers={'Authorization': f'Bearer {token}'},
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {'message': 'Conta deletada com sucesso'}
+        assert dbsession.scalar(sa.select(User).where(User.id == user.model.id)) is None
+
+    def test_without_token(self, client: TestClient, user: UserWithAttrs) -> None:
+        response = client.delete(
+            self.url.format(user_id=user.model.id),
+        )
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert response.json() == {'detail': 'Not authenticated'}
+
+    def test_delete_another_user(self, client: TestClient, token: str, other_user: UserWithAttrs) -> None:
+        response = client.delete(
+            self.url.format(user_id=other_user.model.id),
+            headers={'Authorization': f'Bearer {token}'},
+        )
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert response.json() == {'message': 'Não autorizado'}

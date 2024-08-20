@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from madr.database import T_DbSession
 from madr.errors import ConflictError, UnauthorizedError
 from madr.models import User
-from madr.schemas import UserPublic, UserSchema
+from madr.schemas import Message, UserPublic, UserSchema
 from madr.security import T_CurrentUser
 
 router = APIRouter(prefix='/conta', tags=['Conta'])
@@ -52,3 +52,18 @@ def update_user(dbsession: T_DbSession, current_user: T_CurrentUser, user: UserS
     dbsession.refresh(current_user)
 
     return UserPublic.model_validate(current_user)
+
+
+@router.delete(
+    '/{user_id}',
+    summary='Remove conta no MADR',
+    status_code=HTTPStatus.OK,
+)
+def delete_user(dbsession: T_DbSession, current_user: T_CurrentUser, user_id: int) -> Message:
+    if current_user.id != user_id:
+        raise UnauthorizedError
+
+    dbsession.delete(current_user)
+    dbsession.commit()
+
+    return Message(message='Conta deletada com sucesso')
