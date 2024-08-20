@@ -9,7 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from .database import T_DbSession
 from .errors import HttpError
-from .routers import conta
+from .routers import auth, conta
 from .schemas import ApiInfo, Message
 
 app = FastAPI(
@@ -56,4 +56,5 @@ def health(dbsession: T_DbSession) -> Message:
     return Message(message='OK')
 
 
+app.include_router(auth.router)
 app.include_router(conta.router)

@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from .security import get_password_hash
@@ -12,6 +14,11 @@ class ApiInfo(BaseModel):
     name: str
     description: str
     version: str
+
+
+class Token(BaseModel):
+    token_type: Literal['bearer'] = 'bearer'
+    access_token: str
 
 
 class UserSchema(BaseModel):
