@@ -9,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from .database import T_DbSession
 from .errors import HttpError
+from .routers import conta
 from .schemas import ApiInfo, Message
 
 app = FastAPI(
@@ -53,3 +54,6 @@ def health(dbsession: T_DbSession) -> Message:
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail='Error on database connection') from e
 
     return Message(message='OK')
+
+
+app.include_router(conta.router)
