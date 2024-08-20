@@ -1,7 +1,7 @@
 import factory
 from faker import Faker
 
-from madr.models import User
+from madr.models import Romancista, User
 from madr.security import get_password_hash
 from madr.utils import sanitize
 
@@ -17,3 +17,10 @@ class UserFactory(factory.Factory[User]):
     username = factory.LazyFunction(lambda: sanitize(faker.user_name()))
     password = factory.LazyAttribute(lambda obj: get_password_hash(obj.clean_password))
     clean_password = factory.LazyAttribute(faker.password)
+
+
+class RomancistaFactory(factory.Factory[Romancista]):
+    class Meta:
+        model = Romancista
+
+    name = factory.LazyFunction(lambda: sanitize(faker.name()))

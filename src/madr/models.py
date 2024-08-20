@@ -21,3 +21,10 @@ class User(TimestampMixin, Base, kw_only=True):
     email: Mapped[str] = mapped_column(unique=True)
     username: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
+
+
+class Romancista(TimestampMixin, Base, kw_only=True):
+    __tablename__ = 'romancistas'
+
+    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    name: Mapped[str] = mapped_column(unique=True)
