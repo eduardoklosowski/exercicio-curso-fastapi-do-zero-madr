@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from madr.database import T_DbSession
 from madr.errors import ConflictError, NotFoundError
 from madr.models import Romancista
-from madr.schemas import RomancistaPublic, RomancistaSchema
+from madr.schemas import Message, RomancistaPublic, RomancistaSchema
 from madr.security import T_CurrentUser
 
 router = APIRouter(prefix='/romancista', tags=['Romancista'])
@@ -54,3 +54,18 @@ def update_romancista(
     dbsession.refresh(db_romancista)
 
     return RomancistaPublic.model_validate(db_romancista)
+
+
+@router.delete(
+    '/{romancista_id}',
+    summary='Remove romancista no MADR',
+    status_code=HTTPStatus.OK,
+)
+def delete_romancista(dbsession: T_DbSession, _user: T_CurrentUser, romancista_id: int) -> Message:
+    deleted_id = dbsession.scalar(sa.delete(Romancista).where(Romancista.id == romancista_id).returning(Romancista.id))
+    if not deleted_id:
+        raise NotFoundError(resource='Romancista')
+
+    dbsession.commit()
+
+    return Message(message='Romancista deletado com sucesso')

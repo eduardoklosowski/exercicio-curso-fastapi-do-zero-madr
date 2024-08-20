@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+import sqlalchemy as sa
 from faker import Faker
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -139,3 +140,36 @@ class TestUpdateRomancista:
 
         assert response.status_code == HTTPStatus.CONFLICT
         assert response.json() == {'message': 'Romancista já consta no MADR'}
+
+
+class TestDeleteRomancista:
+    url = '/romancista/{romancista_id}'
+
+    def test_delete_romancista(
+        self, client: TestClient, dbsession: Session, romancista: Romancista, token: str
+    ) -> None:
+        response = client.delete(
+            self.url.format(romancista_id=romancista.id),
+            headers={'Authorization': f'Bearer {token}'},
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {'message': 'Romancista deletado com sucesso'}
+        assert dbsession.scalar(sa.select(Romancista).where(Romancista.id == romancista.id)) is None
+
+    def test_without_token(self, client: TestClient, romancista: Romancista) -> None:
+        response = client.delete(
+            self.url.format(romancista_id=romancista.id),
+        )
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert response.json() == {'detail': 'Not authenticated'}
+
+    def test_not_found(self, client: TestClient, token: str) -> None:
+        response = client.delete(
+            self.url.format(romancista_id=1),
+            headers={'Authorization': f'Bearer {token}'},
+        )
+
+        assert response.status_code == HTTPStatus.NOT_FOUND
+        assert response.json() == {'message': 'Romancista não consta no MADR'}
