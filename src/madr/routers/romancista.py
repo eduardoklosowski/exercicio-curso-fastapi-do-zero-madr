@@ -1,10 +1,11 @@
 from http import HTTPStatus
 
+import sqlalchemy as sa
 from fastapi import APIRouter
 from sqlalchemy.exc import IntegrityError
 
 from madr.database import T_DbSession
-from madr.errors import ConflictError
+from madr.errors import ConflictError, NotFoundError
 from madr.models import Romancista
 from madr.schemas import RomancistaPublic, RomancistaSchema
 from madr.security import T_CurrentUser
@@ -20,6 +21,30 @@ router = APIRouter(prefix='/romancista', tags=['Romancista'])
 def create_romancista(dbsession: T_DbSession, _user: T_CurrentUser, romancista: RomancistaSchema) -> RomancistaPublic:
     db_romancista = Romancista(name=romancista.name)
     dbsession.add(db_romancista)
+    try:
+        dbsession.commit()
+    except IntegrityError as e:
+        if e.orig.__class__.__name__ == 'UniqueViolation':
+            raise ConflictError(resource='Romancista') from None
+        raise  # pragma: no cover
+    dbsession.refresh(db_romancista)
+
+    return RomancistaPublic.model_validate(db_romancista)
+
+
+@router.put(
+    '/{romancista_id}',
+    summary='Atualiza romancista no MADR',
+    status_code=HTTPStatus.OK,
+)
+def update_romancista(
+    dbsession: T_DbSession, _user: T_CurrentUser, romancista: RomancistaSchema, romancista_id: int
+) -> RomancistaPublic:
+    db_romancista = dbsession.scalar(sa.select(Romancista).where(Romancista.id == romancista_id))
+    if not db_romancista:
+        raise NotFoundError(resource='Romancista')
+
+    db_romancista.name = romancista.name
     try:
         dbsession.commit()
     except IntegrityError as e:
