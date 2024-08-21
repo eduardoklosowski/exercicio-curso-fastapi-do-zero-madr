@@ -68,6 +68,29 @@ class TestCreateRomancista:
         assert response.json() == {'message': 'Romancista já consta no MADR'}
 
 
+class TesteGetRomancista:
+    url = '/romancista/{romancista_id}'
+
+    def test_get_romancista(self, client: TestClient, romancista: Romancista) -> None:
+        response = client.get(
+            self.url.format(romancista_id=romancista.id),
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            'id': romancista.id,
+            'name': romancista.name,
+        }
+
+    def test_not_found(self, client: TestClient) -> None:
+        response = client.get(
+            self.url.format(romancista_id=1),
+        )
+
+        assert response.status_code == HTTPStatus.NOT_FOUND
+        assert response.json() == {'message': 'Romancista não consta no MADR'}
+
+
 class TestUpdateRomancista:
     url = '/romancista/{romancista_id}'
 

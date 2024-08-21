@@ -32,6 +32,19 @@ def create_romancista(dbsession: T_DbSession, _user: T_CurrentUser, romancista: 
     return RomancistaPublic.model_validate(db_romancista)
 
 
+@router.get(
+    '/{romancista_id}',
+    summary='Recupera romancista pelo id no MADR',
+    status_code=HTTPStatus.OK,
+)
+def get_romancista(dbsession: T_DbSession, romancista_id: int) -> RomancistaPublic:
+    db_romancista = dbsession.scalar(sa.select(Romancista).where(Romancista.id == romancista_id))
+    if not db_romancista:
+        raise NotFoundError(resource='Romancista')
+
+    return RomancistaPublic.model_validate(db_romancista)
+
+
 @router.put(
     '/{romancista_id}',
     summary='Atualiza romancista no MADR',
