@@ -9,10 +9,10 @@ from sqlalchemy.orm import Session
 
 from madr.api import app
 from madr.database import get_dbsession
-from madr.models import Base, Romancista
+from madr.models import Base, Livro, Romancista
 from madr.security import create_access_token
 from madr.settings import Settings
-from tests.factories import RomancistaFactory, UserFactory
+from tests.factories import LivroFactory, RomancistaFactory, UserFactory
 from tests.utils import UserWithAttrs, randstr
 
 
@@ -92,3 +92,13 @@ def romancista(dbsession: Session) -> Romancista:
     dbsession.refresh(romancista)
 
     return romancista
+
+
+@pytest.fixture
+def livro(dbsession: Session, romancista: Romancista) -> Livro:
+    livro = LivroFactory.build(romancista=romancista)
+    dbsession.add(livro)
+    dbsession.commit()
+    dbsession.refresh(livro)
+
+    return livro

@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import func
-from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
+from sqlalchemy import ForeignKey, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column, relationship
 
 
 class TimestampMixin(MappedAsDataclass):
@@ -28,3 +28,17 @@ class Romancista(TimestampMixin, Base, kw_only=True):
 
     id: Mapped[int] = mapped_column(primary_key=True, init=False)
     name: Mapped[str] = mapped_column(unique=True)
+
+    livros: Mapped[list['Livro']] = relationship(
+        back_populates='romancista', cascade='all, delete-orphan', init=False, repr=False
+    )
+
+
+class Livro(TimestampMixin, Base, kw_only=True):
+    __tablename__ = 'livros'
+
+    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    title: Mapped[str] = mapped_column(unique=True)
+    year: Mapped[int]
+    romancista_id: Mapped[int] = mapped_column(ForeignKey('romancistas.id'), init=False)
+    romancista: Mapped['Romancista'] = relationship(back_populates='livros', repr=False)
