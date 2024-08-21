@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from random import randint
 
 import sqlalchemy as sa
 from faker import Faker
@@ -89,6 +90,111 @@ class TesteGetRomancista:
 
         assert response.status_code == HTTPStatus.NOT_FOUND
         assert response.json() == {'message': 'Romancista não consta no MADR'}
+
+
+class TestListRomancista:
+    url = '/romancista'
+
+    def test_list_romancista(self, client: TestClient, dbsession: Session) -> None:
+        romancistas = RomancistaFactory.build_batch(randint(3, 10))
+        dbsession.add_all(romancistas)
+        dbsession.commit()
+
+        response = client.get(
+            self.url,
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            'romancistas': [{'id': romancista.id, 'name': romancista.name} for romancista in romancistas]
+        }
+
+    def test_empty_list(self, client: TestClient) -> None:
+        response = client.get(
+            self.url,
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {'romancistas': []}
+
+    def test_partial_name(self, client: TestClient, dbsession: Session) -> None:
+        romancistas = [RomancistaFactory.build(name=f'{'a' if i % 2 else 'b'}{i}') for i in range(randint(3, 10))]
+        dbsession.add_all(romancistas)
+        dbsession.commit()
+
+        response = client.get(
+            self.url,
+            params={'name': 'a'},
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            'romancistas': [
+                {'id': romancista.id, 'name': romancista.name} for romancista in romancistas if 'a' in romancista.name
+            ]
+        }
+
+    def test_offset(self, client: TestClient, dbsession: Session) -> None:
+        romancistas = RomancistaFactory.build_batch(randint(30, 40))
+        dbsession.add_all(romancistas)
+        dbsession.commit()
+
+        response = client.get(
+            self.url,
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            'romancistas': [{'id': romancista.id, 'name': romancista.name} for romancista in romancistas[:20]]
+        }
+
+        for i in range(20, len(romancistas)):
+            response = client.get(
+                self.url,
+                params={'offset': i},
+            )
+
+            assert response.status_code == HTTPStatus.OK
+            assert response.json() == {
+                'romancistas': [
+                    {'id': romancista.id, 'name': romancista.name} for romancista in romancistas[i : i + 20]
+                ]
+            }
+
+    def test_limit(self, client: TestClient, dbsession: Session) -> None:
+        romancistas = RomancistaFactory.build_batch(21)
+        dbsession.add_all(romancistas)
+        dbsession.commit()
+
+        for i in range(20):
+            response = client.get(
+                self.url,
+                params={'limit': i},
+            )
+
+            assert response.status_code == HTTPStatus.OK
+            assert response.json() == {
+                'romancistas': [{'id': romancista.id, 'name': romancista.name} for romancista in romancistas[:i]]
+            }
+
+    def test_all_params(self, client: TestClient, dbsession: Session) -> None:
+        romancistas = [RomancistaFactory.build(name=f'{'a' if i % 2 else 'b'}{i}') for i in range(randint(30, 40))]
+        dbsession.add_all(romancistas)
+        dbsession.commit()
+        romancistas_filtrados = [romancista for romancista in romancistas if 'b' in romancista.name]
+
+        for i in range(len(romancistas_filtrados)):
+            response = client.get(
+                self.url,
+                params={'name': 'b', 'offset': i, 'limit': 5},
+            )
+
+            assert response.status_code == HTTPStatus.OK
+            assert response.json() == {
+                'romancistas': [
+                    {'id': romancista.id, 'name': romancista.name} for romancista in romancistas_filtrados[i : i + 5]
+                ]
+            }
 
 
 class TestUpdateRomancista:

@@ -1,14 +1,15 @@
 from http import HTTPStatus
 
 import sqlalchemy as sa
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from sqlalchemy.exc import IntegrityError
 
 from madr.database import T_DbSession
 from madr.errors import ConflictError, NotFoundError
 from madr.models import Romancista
-from madr.schemas import Message, RomancistaPublic, RomancistaSchema
+from madr.schemas import Message, RomancistaList, RomancistaPublic, RomancistaSchema
 from madr.security import T_CurrentUser
+from madr.utils import sanitize
 
 router = APIRouter(prefix='/romancista', tags=['Romancista'])
 
@@ -43,6 +44,27 @@ def get_romancista(dbsession: T_DbSession, romancista_id: int) -> RomancistaPubl
         raise NotFoundError(resource='Romancista')
 
     return RomancistaPublic.model_validate(db_romancista)
+
+
+@router.get(
+    '/',
+    summary='Lista romancistas no MADR',
+    status_code=HTTPStatus.OK,
+)
+def list_romancista(
+    dbsession: T_DbSession,
+    name: str | None = Query(None),
+    offset: int | None = Query(None),
+    limit: int | None = Query(20),
+) -> RomancistaList:
+    query = sa.select(Romancista)
+
+    if name:
+        query = query.filter(Romancista.name.contains(sanitize(name)))
+
+    romancistas = dbsession.scalars(query.offset(offset).limit(limit)).all()
+
+    return RomancistaList.model_validate({'romancistas': romancistas})
 
 
 @router.put(

@@ -65,3 +65,7 @@ class RomancistaPublic(BaseModel):
 
     id: int
     name: str
+
+
+class RomancistaList(BaseModel):
+    romancistas: list[RomancistaPublic]
