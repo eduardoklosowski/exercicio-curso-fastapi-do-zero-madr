@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, PositiveInt, field_validator
 
 from .security import get_password_hash
 from .utils import sanitize
@@ -69,3 +69,26 @@ class RomancistaPublic(BaseModel):
 
 class RomancistaList(BaseModel):
     romancistas: list[RomancistaPublic]
+
+
+class LivroSchema(BaseModel):
+    title: str = Field(min_length=1)
+    year: PositiveInt
+    romancista_id: int
+
+    @field_validator('title')
+    @classmethod
+    def title_validate(cls, v: str) -> str:
+        v = sanitize(v)
+        if not v:
+            raise ValueError('title não deve estar em branco')
+        return v
+
+
+class LivroPublic(BaseModel):
+    model_config = {'from_attributes': True}
+
+    id: int
+    title: str
+    year: int
+    romancista_id: int
