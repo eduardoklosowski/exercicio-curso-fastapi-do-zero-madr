@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from madr.database import T_DbSession
 from madr.errors import ConflictError, NotFoundError
 from madr.models import Livro, Romancista
-from madr.schemas import LivroPublic, LivroSchema
+from madr.schemas import NO_ARG, LivroPatch, LivroPublic, LivroSchema
 from madr.security import T_CurrentUser
 
 router = APIRouter(prefix='/livro', tags=['Livro'])
@@ -30,6 +30,34 @@ def create_livro(dbsession: T_DbSession, _user: T_CurrentUser, livro: LivroSchem
     except IntegrityError as e:
         if e.orig.__class__.__name__ == 'UniqueViolation':
             raise ConflictError(resource='Livro') from None
+        raise  # pragma: no cover
+    dbsession.refresh(db_livro)
+
+    return LivroPublic.model_validate(db_livro)
+
+
+@router.patch(
+    '/{livro_id}',
+    summary='Atualiza livro no MADR',
+    status_code=HTTPStatus.OK,
+)
+def patch_livro(dbsession: T_DbSession, _user: T_CurrentUser, livro: LivroPatch, livro_id: int) -> LivroPublic:
+    db_livro = dbsession.scalar(sa.select(Livro).where(Livro.id == livro_id))
+    if not db_livro:
+        raise NotFoundError(resource='Livro')
+
+    for field in livro.model_fields:
+        value = getattr(livro, field)
+        if value == NO_ARG:
+            continue
+        setattr(db_livro, field, value)
+    try:
+        dbsession.commit()
+    except IntegrityError as e:
+        if e.orig.__class__.__name__ == 'UniqueViolation':
+            raise ConflictError(resource='Livro') from None
+        if e.orig.__class__.__name__ == 'ForeignKeyViolation':
+            raise NotFoundError(resource='Romancista') from None
         raise  # pragma: no cover
     dbsession.refresh(db_livro)
 

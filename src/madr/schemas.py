@@ -1,9 +1,17 @@
+from enum import Enum
 from typing import Literal
 
 from pydantic import BaseModel, EmailStr, Field, PositiveInt, field_validator
 
 from .security import get_password_hash
 from .utils import sanitize
+
+
+class NoArgs(Enum):
+    NO_ARG = 0
+
+
+NO_ARG = NoArgs.NO_ARG
 
 
 class Message(BaseModel):
@@ -75,6 +83,20 @@ class LivroSchema(BaseModel):
     title: str = Field(min_length=1)
     year: PositiveInt
     romancista_id: int
+
+    @field_validator('title')
+    @classmethod
+    def title_validate(cls, v: str) -> str:
+        v = sanitize(v)
+        if not v:
+            raise ValueError('title não deve estar em branco')
+        return v
+
+
+class LivroPatch(BaseModel):
+    title: str | NoArgs = Field(NO_ARG, min_length=1)
+    year: PositiveInt | NoArgs = NO_ARG
+    romancista_id: int | NoArgs = NO_ARG
 
     @field_validator('title')
     @classmethod
