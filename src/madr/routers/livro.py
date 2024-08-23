@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from madr.database import T_DbSession
 from madr.errors import ConflictError, NotFoundError
 from madr.models import Livro, Romancista
-from madr.schemas import NO_ARG, LivroPatch, LivroPublic, LivroSchema
+from madr.schemas import NO_ARG, LivroPatch, LivroPublic, LivroSchema, Message
 from madr.security import T_CurrentUser
 
 router = APIRouter(prefix='/livro', tags=['Livro'])
@@ -62,3 +62,18 @@ def patch_livro(dbsession: T_DbSession, _user: T_CurrentUser, livro: LivroPatch,
     dbsession.refresh(db_livro)
 
     return LivroPublic.model_validate(db_livro)
+
+
+@router.delete(
+    '/{livro_id}',
+    summary='Romove livro no MADR',
+    status_code=HTTPStatus.OK,
+)
+def delete_romancista(dbsession: T_DbSession, _user: T_CurrentUser, livro_id: int) -> Message:
+    deleted_id = dbsession.scalar(sa.delete(Livro).where(Livro.id == livro_id).returning(Livro.id))
+    if not deleted_id:
+        raise NotFoundError(resource='Livro')
+
+    dbsession.commit()
+
+    return Message(message='Livro deletado com sucesso')
