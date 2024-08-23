@@ -145,6 +145,150 @@ class TesteGetLivro:
         assert response.json() == {'message': 'Livro não consta no MADR'}
 
 
+class TestListLivro:
+    url = '/livro'
+
+    def test_list_livro(self, client: TestClient, dbsession: Session) -> None:
+        livros = LivroFactory.build_batch(randint(3, 10))
+        dbsession.add_all(livros)
+        dbsession.commit()
+
+        response = client.get(
+            self.url,
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            'livros': [
+                {'id': livro.id, 'title': livro.title, 'year': livro.year, 'romancista_id': livro.romancista_id}
+                for livro in livros
+            ]
+        }
+
+    def test_empty_list(self, client: TestClient) -> None:
+        response = client.get(
+            self.url,
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {'livros': []}
+
+    def test_partial_title(self, client: TestClient, dbsession: Session) -> None:
+        livros = [LivroFactory.build(title=f'{'a' if i % 2 else 'b'}{i}') for i in range(randint(3, 10))]
+        dbsession.add_all(livros)
+        dbsession.commit()
+
+        response = client.get(
+            self.url,
+            params={'title': 'a'},
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            'livros': [
+                {'id': livro.id, 'title': livro.title, 'year': livro.year, 'romancista_id': livro.romancista_id}
+                for livro in livros
+                if 'a' in livro.title
+            ]
+        }
+
+    def test_year_title(self, client: TestClient, dbsession: Session) -> None:
+        year = randint(1900, 2100)
+
+        livros = [LivroFactory.build(year=year if i % 2 else year + 10) for i in range(randint(3, 10))]
+        dbsession.add_all(livros)
+        dbsession.commit()
+
+        response = client.get(
+            self.url,
+            params={'year': year},
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            'livros': [
+                {'id': livro.id, 'title': livro.title, 'year': livro.year, 'romancista_id': livro.romancista_id}
+                for livro in livros
+                if livro.year == year
+            ]
+        }
+
+    def test_offset(self, client: TestClient, dbsession: Session) -> None:
+        livros = LivroFactory.build_batch(randint(30, 40))
+        dbsession.add_all(livros)
+        dbsession.commit()
+
+        response = client.get(
+            self.url,
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            'livros': [
+                {'id': livro.id, 'title': livro.title, 'year': livro.year, 'romancista_id': livro.romancista_id}
+                for livro in livros[:20]
+            ]
+        }
+
+        for i in range(20, len(livros)):
+            response = client.get(
+                self.url,
+                params={'offset': i},
+            )
+
+            assert response.status_code == HTTPStatus.OK
+            assert response.json() == {
+                'livros': [
+                    {'id': livro.id, 'title': livro.title, 'year': livro.year, 'romancista_id': livro.romancista_id}
+                    for livro in livros[i : i + 20]
+                ]
+            }
+
+    def test_limit(self, client: TestClient, dbsession: Session) -> None:
+        livros = LivroFactory.build_batch(21)
+        dbsession.add_all(livros)
+        dbsession.commit()
+
+        for i in range(20):
+            response = client.get(
+                self.url,
+                params={'limit': i},
+            )
+
+            assert response.status_code == HTTPStatus.OK
+            assert response.json() == {
+                'livros': [
+                    {'id': livro.id, 'title': livro.title, 'year': livro.year, 'romancista_id': livro.romancista_id}
+                    for livro in livros[:i]
+                ]
+            }
+
+    def test_all_params(self, client: TestClient, dbsession: Session) -> None:
+        year = randint(1900, 2100)
+
+        livros = [
+            LivroFactory.build(title=f'{'b' if i % 2 else 'a'}{i}', year=year if i % 4 else year + 10)
+            for i in range(randint(30, 40))
+        ]
+        dbsession.add_all(livros)
+        dbsession.commit()
+        livros_filtered = [livro for livro in livros if 'b' in livro.title and livro.year == year]
+
+        for i in range(len(livros_filtered)):
+            response = client.get(
+                self.url,
+                params={'title': 'b', 'year': year, 'offset': i, 'limit': 5},
+            )
+
+            assert response.status_code == HTTPStatus.OK
+            assert response.json() == {
+                'livros': [
+                    {'id': livro.id, 'title': livro.title, 'year': livro.year, 'romancista_id': livro.romancista_id}
+                    for livro in livros_filtered[i : i + 5]
+                ]
+            }
+
+
 class TestPatchLivro:
     url = '/livro/{livro_id}'
 

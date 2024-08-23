@@ -114,3 +114,7 @@ class LivroPublic(BaseModel):
     title: str
     year: int
     romancista_id: int
+
+
+class LivroList(BaseModel):
+    livros: list[LivroPublic]

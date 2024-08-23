@@ -1,14 +1,15 @@
 from http import HTTPStatus
 
 import sqlalchemy as sa
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from sqlalchemy.exc import IntegrityError
 
 from madr.database import T_DbSession
 from madr.errors import ConflictError, NotFoundError
 from madr.models import Livro, Romancista
-from madr.schemas import NO_ARG, LivroPatch, LivroPublic, LivroSchema, Message
+from madr.schemas import NO_ARG, LivroList, LivroPatch, LivroPublic, LivroSchema, Message
 from madr.security import T_CurrentUser
+from madr.utils import sanitize
 
 router = APIRouter(prefix='/livro', tags=['Livro'])
 
@@ -47,6 +48,30 @@ def get_livro(dbsession: T_DbSession, livro_id: int) -> LivroPublic:
         raise NotFoundError(resource='Livro')
 
     return LivroPublic.model_validate(db_livro)
+
+
+@router.get(
+    '/',
+    summary='Lista livros no MADR',
+    status_code=HTTPStatus.OK,
+)
+def list_livros(
+    dbsession: T_DbSession,
+    title: str | None = Query(None),
+    year: int | None = Query(None),
+    offset: int | None = Query(None),
+    limit: int | None = Query(20),
+) -> LivroList:
+    query = sa.select(Livro)
+
+    if title:
+        query = query.filter(Livro.title.contains(sanitize(title)))
+    if year:
+        query = query.filter(Livro.year == year)
+
+    livros = dbsession.scalars(query.offset(offset).limit(limit)).all()
+
+    return LivroList.model_validate({'livros': livros})
 
 
 @router.patch(
