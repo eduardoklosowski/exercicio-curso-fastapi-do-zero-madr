@@ -120,6 +120,31 @@ class TestCreateLivro:
         assert response.json() == {'message': 'Romancista não consta no MADR'}
 
 
+class TesteGetLivro:
+    url = '/livro/{livro_id}'
+
+    def test_get_livro(self, client: TestClient, livro: Livro) -> None:
+        response = client.get(
+            self.url.format(livro_id=livro.id),
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            'id': livro.id,
+            'title': livro.title,
+            'year': livro.year,
+            'romancista_id': livro.romancista_id,
+        }
+
+    def test_not_found(self, client: TestClient) -> None:
+        response = client.get(
+            self.url.format(livro_id=1),
+        )
+
+        assert response.status_code == HTTPStatus.NOT_FOUND
+        assert response.json() == {'message': 'Livro não consta no MADR'}
+
+
 class TestPatchLivro:
     url = '/livro/{livro_id}'
 

@@ -36,6 +36,19 @@ def create_livro(dbsession: T_DbSession, _user: T_CurrentUser, livro: LivroSchem
     return LivroPublic.model_validate(db_livro)
 
 
+@router.get(
+    '/{livro_id}',
+    summary='Recupera livro pelo id no MADR',
+    status_code=HTTPStatus.OK,
+)
+def get_livro(dbsession: T_DbSession, livro_id: int) -> LivroPublic:
+    db_livro = dbsession.scalar(sa.select(Livro).where(Livro.id == livro_id))
+    if not db_livro:
+        raise NotFoundError(resource='Livro')
+
+    return LivroPublic.model_validate(db_livro)
+
+
 @router.patch(
     '/{livro_id}',
     summary='Atualiza livro no MADR',
